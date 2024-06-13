@@ -1,9 +1,7 @@
 streamlit
 pandas
-openai==1.12.0
-pdf2image==1.17.0
-pytesseract==0.3.10
-matplotlib
 numpy
-seaborn
-plotly
+pdf2image
+pytesseract
+openai
+Pillow
