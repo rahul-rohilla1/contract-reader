@@ -8,8 +8,7 @@ from io import StringIO
 import openai
 from openai import OpenAI
 
-# Set the Tesseract command path
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 
 # OpenAI API key setup
 client = OpenAI(api_key="sk-proj-akuqP2GWco082ufWChRfT3BlbkFJjgrViem1GnR0JpJLND7N")
