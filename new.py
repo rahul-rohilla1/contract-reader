@@ -6,12 +6,10 @@ import tempfile
 import re
 from io import StringIO
 import openai
-from openai import OpenAI
 
-
-
-# OpenAI API key setup
-client = OpenAI(api_key="sk-proj-akuqP2GWco082ufWChRfT3BlbkFJjgrViem1GnR0JpJLND7N")
+# Read the OpenAI API key from Streamlit secrets
+api_key = st.secrets["openai_api_key"]
+client = openai.OpenAI(api_key=api_key)
 
 def get_response(prompt):
     response = client.chat.completions.create(
@@ -53,7 +51,7 @@ def find_variables(pdf_bytes, user_variables):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
         tmp_file.write(pdf_bytes)
         tmp_file_path = tmp_file.name
-    
+
     try:
         pdf_info = pdfinfo_from_path(tmp_file_path)
         total_pages = pdf_info["Pages"]
@@ -72,7 +70,7 @@ def find_variables(pdf_bytes, user_variables):
         except Exception as e:
             st.error(f"Error processing page {page_number}: {e}")
             continue
-        
+
         if numbers_percentage(concat_text) > 0.1 or page_number == total_pages:
             prompt_output = look_variables_in_text(concat_text, user_variables)
             retrieved_variables = generate_dataframe(prompt_output)
@@ -122,18 +120,18 @@ if uploaded_files:
     for uploaded_file in uploaded_files:
         # Read PDF file
         pdf_bytes = uploaded_file.read()
-        
+
         # Extract data using find_variables function
         df = find_variables(pdf_bytes, user_variables)
-        
+
         if df.empty:
             st.warning(f"No data extracted from the uploaded PDF: {uploaded_file.name}")
             continue
-        
+
         # Filter the dataframe based on user-specified columns
         filtered_df = df[df['Variable Name'].isin(user_variables)].set_index('Variable Name').T
         filtered_df.reset_index(drop=True, inplace=True)
-        
+
         # Append the new data to the session state dataframe
         st.session_state.all_data.append(filtered_df)
         st.session_state.dataframe = pd.concat(st.session_state.all_data, ignore_index=True)
