@@ -8,7 +8,12 @@ from io import StringIO
 import openai
 
 # Read the OpenAI API key from Streamlit secrets
-api_key = st.secrets["openai_api_key"]
+try:
+    api_key = st.secrets["openai_api_key"]
+except KeyError:
+    st.error("OpenAI API key not found in Streamlit secrets. Please add it to the secrets section.")
+    st.stop()
+
 client = openai.OpenAI(api_key=api_key)
 
 def get_response(prompt):
